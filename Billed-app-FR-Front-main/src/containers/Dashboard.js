@@ -71,6 +71,29 @@ export const getStatus = (index) => {
   }
 };
 
+// const modalHeader = document.querySelector(".modal-header");
+// const modalImage = document.getElementById("modalImage");
+
+// // Crée l'icône de téléchargement
+// const downloadIcon = document.createElement("span");
+// downloadIcon.classList.add("download-icon");
+// downloadIcon.innerHTML = '<i class="fas fa-download"></i>';
+
+// // Ajoute l'icône au header modal
+// modalHeader.appendChild(downloadIcon);
+
+// downloadIcon.addEventListener("click", () => {
+//   // Récupère l'URL de l'image dans le modal
+//   const url = modalImage.getAttribute("src");
+
+//   // Crée un élément <a> pour le téléchargement
+//   const a = document.createElement("a");
+//   a.href = url;
+//   ("${url.value}");
+//   a.download = "${input.value}"; // Nom du fichier à télécharger avec l'extension
+//   a.click(); // Lance le téléchargement
+// });
+
 export default class {
   constructor({ document, onNavigate, store, bills, localStorage }) {
     this.document = document;
