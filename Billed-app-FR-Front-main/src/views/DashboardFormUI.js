@@ -13,7 +13,6 @@ export const modal = () => `
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <button typer="button" class="download" data-testid="download" data-bill-url="">
         </div>
         <div class="modal-body" data-toggle="modal">
         </div>
@@ -75,9 +74,6 @@ export default (bill) => {
               <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${
                 bill.fileUrl
               }"> ${eyeWhite} </span>
-              <span id="icon-download-d" data-testid="icon-download" data-bill-url="${
-                bill.fileUrl
-              }"> <i class="fas fa-download"></i> </span>
             </div>
           </div>
         </div>
