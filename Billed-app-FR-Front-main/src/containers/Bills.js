@@ -54,17 +54,31 @@ export default class {
   };
 
   handleClickDownloadIcon = (icon) => {
+    // Récupère l'URL du fichier à partir de l'attribut 'data-bill-url' de l'icône
     const fileUrl = icon.getAttribute("data-bill-url");
+
+    // Vérifie si l'URL existe
     if (fileUrl) {
+      // Crée un élément de lien (a) temporaire pour télécharger le fichier
       const link = document.createElement("a");
+
+      // Définit l'URL du fichier comme href du lien
       link.href = fileUrl;
-      const fileName = "facture.jpg";
-      debugger;
+
+      // Définit le nom du fichier à télécharger (ici, "bill.jpg")
+      const fileName = "bill.jpg";
       link.download = fileName;
+
+      // Ajoute le lien à la page (temporairement) pour qu'il soit cliquable
       document.body.appendChild(link);
+
+      // Simule un clic sur le lien pour lancer le téléchargement
       link.click();
+
+      // Supprime le lien de la page après le téléchargement
       document.body.removeChild(link);
     } else {
+      // Si aucune URL de fichier n'est trouvée, affiche une erreur dans la console
       console.error("Aucune URL de fichier trouvée !");
     }
   };

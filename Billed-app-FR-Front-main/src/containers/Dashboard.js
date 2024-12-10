@@ -71,23 +71,6 @@ export const getStatus = (index) => {
   }
 };
 
-//Création du bouton download dans la modal header
-
-// const modalHeader = document.querySelector(".modal-header");
-// const modalImage = document.getElementById("modalImage");
-// const btnClose = document.querySelector(".close");
-
-// if (modalHeader && btnClose) {
-//   const downloadIcon = document.createElement("span");
-//   downloadIcon.classList.add("icon-download-d");
-//   downloadIcon.innerHTML = '<i class="fas fa-download"></i>';
-
-//   modalHeader.insertBefore(downloadIcon, btnClose);
-
-//   downloadIcon.addEventListener("click", () => {
-//
-// }
-
 export default class {
   constructor({ document, onNavigate, store, bills, localStorage }) {
     this.document = document;
