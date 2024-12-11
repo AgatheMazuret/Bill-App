@@ -69,7 +69,7 @@ export default class {
       const fileName = "bill.jpg";
       link.download = fileName;
 
-      // Ajoute le lien à la page (temporairement) pour qu'il soit cliquable
+      // Ajoute le lien à la page pour qu'il soit cliquable
       document.body.appendChild(link);
 
       // Simule un clic sur le lien pour lancer le téléchargement
