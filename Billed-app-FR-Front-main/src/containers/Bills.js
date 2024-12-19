@@ -43,13 +43,22 @@ export default class {
   };
 
   handleClickIconEye = (icon) => {
+    // Récupère l'URL de la facture depuis l'attribut "data-bill-url" de l'icône cliquée
     const billUrl = icon.getAttribute("data-bill-url");
+
+    // Calcule la largeur de l'image en prenant 50% de la largeur du modal
     const imgWidth = Math.floor($("#modaleFile").width() * 0.5);
+
+    // Insère une image de la facture dans le contenu du modal
     $("#modaleFile")
-      .find(".modal-body")
+      .find(".modal-body") // Trouve le conteneur de la partie "body" du modal
       .html(
-        `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`
+        `<div style='text-align: center;' class="bill-proof-container">
+          <img width=${imgWidth} src=${billUrl} alt="Bill" />
+        </div>` // Ajoute une image centrée avec l'URL de la facture
       );
+
+    // Affiche le modal avec la facture
     $("#modaleFile").modal("show");
   };
 
@@ -66,7 +75,7 @@ export default class {
       link.href = fileUrl;
 
       // Définit le nom du fichier à télécharger (ici, "bill.jpg")
-      const fileName = "bill.jpg";
+      const fileName = "bill/jpg";
       link.download = fileName;
 
       // Ajoute le lien à la page pour qu'il soit cliquable
