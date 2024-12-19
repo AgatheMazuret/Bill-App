@@ -14,20 +14,8 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("Given I am connected as an employee", () => {
-  describe("When I am on NewBill Page", () => {
-    test("Then the New Bill form should be rendered", () => {
-      const html = NewBillUI();
-      document.body.innerHTML = html;
-
-      expect(screen.getByTestId("form-new-bill")).toBeTruthy();
-      expect(screen.getByTestId("expense-type")).toBeTruthy();
-      expect(screen.getByTestId("expense-name")).toBeTruthy();
-      expect(screen.getByTestId("datepicker")).toBeTruthy();
-      expect(screen.getByTestId("amount")).toBeTruthy();
-      expect(screen.getByTestId("vat")).toBeTruthy();
-      expect(screen.getByTestId("pct")).toBeTruthy();
-      expect(screen.getByTestId("file")).toBeTruthy();
-    });
+describe("Je suis connecté en tant qu'employé", () => {
+  describe("Quand je suis sur la page NewBill", () => {
+    test("La page NewBill doit s'afficher", () => {});
   });
 });

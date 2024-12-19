@@ -227,4 +227,30 @@ describe("Given that I am a user on login page", () => {
       expect(screen.queryByText("Validations")).toBeTruthy();
     });
   });
+
+  describe("Quand je clique sur le bouton connexion après avoir rempli les champs", () => {
+    describe("Si l'email et le mot de passe n'existent pas", () => {
+      test("Alors on crée un nouvel utilisateur et on le connecte", () => {
+        // Simuler l'action de remplir le formulaire avec un email et un mot de passe qui n'existent pas
+        const email = "nouvelutilisateur@example.com";
+        const password = "motdepasse123";
+
+        // Simuler l'appel à la fonction de connexion
+        const response = new Login(email, password); // Fonction simulée pour soumettre le formulaire
+
+        // Vérifier que l'utilisateur n'existe pas encore
+        expect(response).toBeNull(); // Si l'utilisateur n'existe pas, on suppose qu'on reçoit une réponse null
+
+        // Simuler la création d'un nouvel utilisateur
+        const newUser = createUser(email, password); // Fonction simulée pour créer un utilisateur
+
+        // Vérifier que l'utilisateur est bien créé
+        expect(newUser).not.toBeNull(); // L'utilisateur ne doit pas être nul après la création
+
+        // Vérifier que l'utilisateur est connecté après la création
+        const loginResponse = userLogin(email, password);
+        expect(loginResponse).toEqual(newUser); // L'utilisateur nouvellement créé doit être connecté
+      });
+    });
+  });
 });
