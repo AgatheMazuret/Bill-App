@@ -71,14 +71,10 @@ export default class NewBill {
   handleSubmit = (e) => {
     e.preventDefault(); // Empêche le comportement par défaut du formulaire (rechargement de la page)
 
-    // Affiche la valeur sélectionnée dans le champ de date dans la console pour debug
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
+    const user = localStorage.getItem("user");
 
     // Récupère l'email de l'utilisateur actuellement connecté à partir du localStorage
-    const email = JSON.parse(localStorage.getItem("user")).email;
+    const email = JSON.parse(user).email;
 
     // Création d'un objet "bill" (facture) contenant toutes les informations saisies dans le formulaire
     const bill = {

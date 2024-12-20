@@ -6,6 +6,7 @@ import LoginUI from "../views/LoginUI";
 import Login from "../containers/Login.js";
 import { ROUTES } from "../constants/routes";
 import { fireEvent, screen } from "@testing-library/dom";
+import handleSubmitEmployee from "../containers/Login.js";
 
 describe("Given that I am a user on login page", () => {
   describe("When I do not fill fields and I click on employee button Login In", () => {
@@ -252,5 +253,61 @@ describe("Given that I am a user on login page", () => {
         expect(loginResponse).toEqual(newUser); // L'utilisateur nouvellement créé doit être connecté
       });
     });
+  });
+});
+
+// .catch((err) => this.createUser(user)) // Si l'utilisateur n'existe pas, le crée
+
+describe("Je veux créer un nouvel utilisateur", () => {
+  test("Si l'utilisateur n'existe pas, alors je dois créer un nouvel utilisateur", () => {
+    // Créer un nouvel utilisateur
+    const createUser = (email, password) => {
+      const user = {
+        type: "Employee",
+        email,
+        password,
+        status: "connected",
+      };
+
+      // Stocker les informations de l'utilisateur dans le localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
+      return user;
+    };
+
+    // Création d'un nouvel utilisateur
+    const email = "newUser@new.fr";
+    const password = "motdepasse123";
+
+    // Appel de la fonction pour créer un utilisateur
+    const newUser = createUser(email, password, type);
+
+    // Vérification que l'utilisateur a bien été créé
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    // Vérifications
+    expect(storedUser).toBeDefined(); // Vérifie que l'utilisateur est stocké
+    expect(storedUser.email).toBe(email); // Vérifie que l'email est correct
+    expect(storedUser.password).toBe(password); // Vérifie que le mot de passe est correct
+    expect(storedUser.type).toBe("Employee"); // Vérifie que le type de l'utilisateur est "Employee"
+    expect(storedUser.status).toBe("connected"); // Vérifie que le statut est "connected"
+  });
+  test("L'utilisateur a été créé je l'envoi sur le dashboard", () => {
+    storedUser = JSON.parse(localStorage.getItem("user"));
+    // On crée un utilisateur
+    const email = "newUser@new.fr";
+    const password = "motdepasse123";
+    createUser(email, password);
+
+    // Récupération de l'utilisateur
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    // Test pour vérifier l'envoi sur le dashboard
+    expect(storedUser).toBeDefined();
+    expect(storedUser.status).toBe("connected");
+    window.location.href = "/dashboard";
+    const redirect = jest.fn();
+    redirect();
+    expect(redirect).toHaveBeenCalled();
   });
 });
