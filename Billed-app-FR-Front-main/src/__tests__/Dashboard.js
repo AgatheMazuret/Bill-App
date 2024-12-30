@@ -297,9 +297,69 @@ describe("Given I am connected as Admin and I am on Dashboard page and I clicked
       eye.addEventListener("click", handleClickIconEye);
       userEvent.click(eye);
       expect(handleClickIconEye).toHaveBeenCalled();
+      expect(handleClickIconEye).toHaveBeenCalledTimes(1);
 
       const modale = screen.getByTestId("modaleFileAdmin");
       expect(modale).toBeTruthy();
+    });
+  });
+});
+
+describe("Quand je suis connecté comme employee sur le dashboard", () => {
+  describe("Quand je clique sur l'icone téléchargement d'une facture", () => {
+    test("Alors un fichier doit être téléchargé", () => {
+      // Mock de localStorage
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+
+      // Simuler l'interface utilisateur avec une facture
+      document.body.innerHTML = DashboardFormUI(bills[0]);
+
+      // Mock de la navigation et création de l'objet Dashboard
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = null;
+      const dashboard = new Dashboard({
+        document,
+        onNavigate,
+        store,
+        bills,
+        localStorage: window.localStorage,
+      });
+
+      // Mock de la méthode handleClickDownloadIcon
+      const handleClickDownloadIcon = jest.spyOn(
+        dashboard,
+        "handleClickDownloadIcon"
+      );
+
+      // Sélection de l'icône de téléchargement
+      const downloadIcon = screen.getByTestId("icon-download-d");
+
+      // Ajout de l'événement clic simulé
+      downloadIcon.addEventListener("click", (e) =>
+        dashboard.handleClickDownloadIcon(e.target)
+      );
+
+      // Simuler un clic sur l'icône
+      downloadIcon.click();
+
+      // Vérifier si handleClickDownloadIcon a bien été appelée
+      expect(handleClickDownloadIcon).toHaveBeenCalled();
+      expect(handleClickDownloadIcon).toHaveBeenCalledTimes(1);
+
+      // Vérifier si l'URL a été correctement récupérée
+      expect(handleClickDownloadIcon).toHaveBeenCalledWith(downloadIcon);
+      const fileUrl = downloadIcon.getAttribute("data-bill-url");
+      expect(fileUrl).toBe("path/to/file1.jpeg");
     });
   });
 });

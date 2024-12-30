@@ -27,7 +27,6 @@ export default () => {
       });
     } else if (pathname === ROUTES_PATH["Bills"]) {
       rootDiv.innerHTML = ROUTES({ pathname, loading: true });
-      console.log(rootDiv.innerHTML);
       const divIcon1 = document.getElementById("layout-icon1");
       const divIcon2 = document.getElementById("layout-icon2");
       divIcon1.classList.add("active-icon");

@@ -123,6 +123,36 @@ export default class {
       $("#modaleFileAdmin1").modal("show"); // Affiche la modal si elle est disponible
   };
 
+  handleClickDownloadIcon = (icon) => {
+    // Récupère l'URL du fichier à partir de l'attribut 'data-bill-url' de l'icône
+    const fileUrl = icon.getAttribute("data-bill-url");
+
+    // Vérifie si l'URL existe
+    if (fileUrl) {
+      // Crée un élément de lien (a) temporaire pour télécharger le fichier
+      const link = document.createElement("a");
+
+      // Définit l'URL du fichier comme href du lien
+      link.href = fileUrl;
+
+      // Définit le nom du fichier à télécharger (ici, "bill.jpg")
+      const fileName = "bill/jpg";
+      link.download = fileName;
+
+      // Ajoute le lien à la page pour qu'il soit cliquable
+      document.body.appendChild(link);
+
+      // Simule un clic sur le lien pour lancer le téléchargement
+      link.click();
+
+      // Supprime le lien de la page après le téléchargement
+      document.body.removeChild(link);
+    } else {
+      // Si aucune URL de fichier n'est trouvée, affiche une erreur dans la console
+      console.error("Aucune URL de fichier trouvée !");
+    }
+  };
+
   // Gestion de l'édition d'une facture
   handleEditTicket(e, bill, bills) {
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0; // Initialise le compteur si nécessaire
@@ -176,29 +206,27 @@ export default class {
 
   // Afficher ou masquer les tickets pour un statut donné
   handleShowTickets(e, bills, index) {
-    this.openStatus[index] = !this.openStatus[index]; // Inverse l'état d'ouverture de la liste
+    if (this.counter === undefined || this.index !== index) this.counter = 0;
+    if (this.index === undefined || this.index !== index) this.index = index;
+    if (this.counter % 2 === 0) {
+      $(`#arrow-icon${this.index}`).css({ transform: "rotate(0deg)" });
+      $(`#status-bills-container${this.index}`).html(
+        cards(filteredBills(bills, getStatus(this.index)))
+      );
+      this.counter++;
+    } else {
+      $(`#arrow-icon${this.index}`).css({ transform: "rotate(90deg)" });
+      $(`#status-bills-container${this.index}`).html("");
+      this.counter++;
+    }
 
-    $(`#arrow-icon${index}`).css({
-      transform: this.openStatus[index] ? "rotate(0deg)" : "rotate(90deg)", // Met à jour l'icône de flèche
+    bills.forEach((bill) => {
+      $(`#open-bill${bill.id}`).click((e) =>
+        this.handleEditTicket(e, bill, bills)
+      );
     });
 
-    if (this.openStatus[index]) {
-      // Si la liste est ouverte, affiche les factures filtrées
-      $(`#status-bills-container${index}`).html(
-        cards(filteredBills(bills, getStatus(index))) // Génère les cartes des factures
-      );
-
-      // Ajoute un événement "click" pour chaque facture
-      filteredBills(bills, getStatus(index)).forEach((bill) => {
-        $(`#open-bill${bill.id}`).off("click"); // Supprime d'anciens gestionnaires
-        $(`#open-bill${bill.id}`).click(
-          (e) => this.handleEditTicket(e, bill, bills) // Attache le gestionnaire d'édition
-        );
-      });
-    } else {
-      // Si la liste est fermée, vide le conteneur
-      $(`#status-bills-container${index}`).html("");
-    }
+    return bills;
   }
 
   // Récupérer toutes les factures pour tous les utilisateurs

@@ -7,34 +7,16 @@ export default class {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-
-    // Bouton pour créer une nouvelle facture
     const buttonNewBill = document.querySelector(
       `button[data-testid="btn-new-bill"]`
     );
     if (buttonNewBill)
       buttonNewBill.addEventListener("click", this.handleClickNewBill);
-
-    // Icônes pour visualiser les factures
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`);
-    if (iconEye) {
+    if (iconEye)
       iconEye.forEach((icon) => {
         icon.addEventListener("click", () => this.handleClickIconEye(icon));
       });
-    }
-
-    // Icônes pour télécharger les factures
-    const iconDownload = document.querySelectorAll(
-      `div[data-testid="icon-download"]`
-    );
-    if (iconDownload) {
-      iconDownload.forEach((icon) => {
-        icon.addEventListener("click", () =>
-          this.handleClickDownloadIcon(icon)
-        );
-      });
-    }
-
     new Logout({ document, localStorage, onNavigate });
   }
 
@@ -43,53 +25,14 @@ export default class {
   };
 
   handleClickIconEye = (icon) => {
-    // Récupère l'URL de la facture depuis l'attribut "data-bill-url" de l'icône cliquée
     const billUrl = icon.getAttribute("data-bill-url");
-
-    // Calcule la largeur de l'image en prenant 50% de la largeur du modal
     const imgWidth = Math.floor($("#modaleFile").width() * 0.5);
-
-    // Insère une image de la facture dans le contenu du modal
     $("#modaleFile")
-      .find(".modal-body") // Trouve le conteneur de la partie "body" du modal
+      .find(".modal-body")
       .html(
-        `<div style='text-align: center;' class="bill-proof-container">
-          <img width=${imgWidth} src=${billUrl} alt="Bill" />
-        </div>` // Ajoute une image centrée avec l'URL de la facture
+        `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`
       );
-
-    // Affiche le modal avec la facture
     $("#modaleFile").modal("show");
-  };
-
-  handleClickDownloadIcon = (icon) => {
-    // Récupère l'URL du fichier à partir de l'attribut 'data-bill-url' de l'icône
-    const fileUrl = icon.getAttribute("data-bill-url");
-
-    // Vérifie si l'URL existe
-    if (fileUrl) {
-      // Crée un élément de lien (a) temporaire pour télécharger le fichier
-      const link = document.createElement("a");
-
-      // Définit l'URL du fichier comme href du lien
-      link.href = fileUrl;
-
-      // Définit le nom du fichier à télécharger (ici, "bill.jpg")
-      const fileName = "bill/jpg";
-      link.download = fileName;
-
-      // Ajoute le lien à la page pour qu'il soit cliquable
-      document.body.appendChild(link);
-
-      // Simule un clic sur le lien pour lancer le téléchargement
-      link.click();
-
-      // Supprime le lien de la page après le téléchargement
-      document.body.removeChild(link);
-    } else {
-      // Si aucune URL de fichier n'est trouvée, affiche une erreur dans la console
-      console.error("Aucune URL de fichier trouvée !");
-    }
   };
 
   getBills = () => {
@@ -98,27 +41,31 @@ export default class {
         .bills()
         .list()
         .then((snapshot) => {
-          const bills = snapshot
-            .map((doc) => {
-              try {
-                return {
-                  ...doc,
-                  date: formatDate(doc.date),
-                  status: formatStatus(doc.status),
-                };
-              } catch (e) {
-                // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-                // log the error and return unformatted date in that case
-                console.log(e, "for", doc);
-                return {
-                  ...doc,
-                  date: doc.date,
-                  status: formatStatus(doc.status),
-                };
-              }
-            })
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
+          // Transformer chaque document dans le snapshot
+          const bills = snapshot.map((doc) => {
+            try {
+              // Retourner un nouvel objet avec la date et le statut formatés
+              return {
+                ...doc, // Copier toutes les propriétés du document
+                date: formatDate(doc.date), // Formater la date
+                status: formatStatus(doc.status), // Formater le statut
+              };
+            } catch (e) {
+              // Si une erreur se produit, afficher l'erreur et les données problématiques
+              console.log(e, "for", doc);
+              // Retourner les données sans formatage de la date
+              return {
+                ...doc, // Copier toutes les propriétés du document
+                date: doc.date, // Garder la date non formatée
+                status: formatStatus(doc.status), // Formater seulement le statut
+              };
+            }
+          });
+
+          // Afficher la longueur de la liste des factures
           console.log("length", bills.length);
+
+          // Retourner la liste des factures
           return bills;
         });
     }

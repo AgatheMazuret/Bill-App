@@ -23,7 +23,7 @@ export default class NewBill {
   }
 
   handleChangeFile = (e) => {
-    e.preventDefault(); // Empêche le rechargement ou comportement par défaut du formulaire
+    e.preventDefault();
 
     // Récupère le premier fichier sélectionné dans l'input de type "file"
     const file = this.document.querySelector(`input[data-testid="file"]`)
@@ -69,7 +69,7 @@ export default class NewBill {
   };
 
   handleSubmit = (e) => {
-    e.preventDefault(); // Empêche le comportement par défaut du formulaire (rechargement de la page)
+    e.preventDefault(); // Empêche le rechargement de la page
 
     const user = localStorage.getItem("user");
 
