@@ -132,7 +132,7 @@ export default class Login {
     }
   };
 
-  // Méthode pour créer un nouvel utilisateur (non testée directement)
+  // Méthode pour créer un nouvel utilisateur
   createUser = (user) => {
     if (this.store) {
       // Envoie une requête de création d'utilisateur via le store

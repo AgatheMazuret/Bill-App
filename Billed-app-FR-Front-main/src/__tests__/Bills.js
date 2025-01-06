@@ -4,7 +4,6 @@
 
 import { screen, waitFor, fireEvent } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
-import DashboardFormUI from "../views/DashboardFormUI.js";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
@@ -40,7 +39,7 @@ describe("Given I am connected as an employee", () => {
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
         )
         .map((a) => a.innerHTML);
-      const antiChrono = (a, b) => (a < b ? 1 : -1);
+      const antiChrono = (a, b) => new Date(b) - new Date(a);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
     });
@@ -72,7 +71,7 @@ describe("Employee Dashboard", () => {
       const buttonNewBill = screen.getByTestId("btn-new-bill");
 
       // Simuler un clic sur le bouton
-      fireEvent.click(buttonNewBill);
+      fireEvent.click(handleClickNewBillSpy);
 
       // Vérifier que la méthode handleClickNewBill a été appelée
       expect(handleClickNewBillSpy).toHaveBeenCalled();
@@ -123,28 +122,40 @@ describe("Employee Dashboard", () => {
 describe("Given I am connected as an employee", () => {
   describe("When I click on the eye icon", () => {
     test("A modal should open", () => {
-      // Créer une instance de Bills
+      const mockBills = [
+        { id: "1", fileName: "test.png", date: "2023-01-01", amount: 100 },
+      ];
+
+      document.body.innerHTML = BillsUI({
+        data: mockBills,
+        loading: false,
+        error: null,
+      });
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+
       const bills = new Bills({
-        document: document,
-        onNavigate: jest.fn(),
+        document,
+        onNavigate,
         localStorage: window.localStorage,
       });
 
-      // Créer un élément icon
-      const icon = document.createElement("div");
-      icon.setAttribute("data-bill-url", "test.png");
-
-      // Espionner la méthode handleClickIconEye
+      const icon = document.querySelector(".icon-eye-d");
       const handleClickIconEyeSpy = jest.spyOn(bills, "handleClickIconEye");
 
-      // Appeler handleClickIconEye avec l'élément icon
-      bills.handleClickIconEye(icon);
+      // Simulate click
+      fireEvent.click(icon);
 
-      // Vérifier que handleClickIconEye a été appelée
       expect(handleClickIconEyeSpy).toHaveBeenCalled();
       expect(handleClickIconEyeSpy).toHaveBeenCalledTimes(1);
 
-      // Restaurer la méthode originale
+      // Check if modal opens
+      const modal = document.querySelector(".modal");
+      expect(modal).not.toBeNull();
+      expect(modal.querySelector("img").src).toContain("test.png");
+
       handleClickIconEyeSpy.mockRestore();
     });
   });
@@ -156,6 +167,6 @@ describe("Given I am connected as an employee", () => {
 // });
 // ***************************************
 
-describe("Given I am connected as an employee", () => {
-  test("I must be able to click on the eye icon", () => {});
-});
+// describe("Given I am connected as an employee", () => {
+//   test("I must be able to click on the eye icon", () => {});
+// });

@@ -76,14 +76,10 @@ describe("Je suis connecté en tant qu'employé", () => {
       // Initialisation du composant NewBill
       const newBill = new NewBill({ document, onNavigate });
 
-      // Simulation du formulaire et du bouton d'envoi
-      document.body.innerHTML = `
-      <form data-testid="form-new-bill">
-        <button type="submit">Envoyer</button>
-      </form>
-    `;
+      // Affichage de la page NewBill
+      document.body.innerHTML = NewBillUI();
 
-      const form = screen.getByTestId("form-new-bill");
+      const form = document.getElementById("btn-send-bill");
       const submitButton = screen.getByRole("button", { name: "Envoyer" });
 
       // Mock de la méthode handleSubmit
@@ -91,8 +87,8 @@ describe("Je suis connecté en tant qu'employé", () => {
       newBill.handleSubmit = handleSubmit;
       form.addEventListener("submit", newBill.handleSubmit);
 
-      // Simuler un clic sur le bouton
-      fireEvent.click(submitButton);
+      // Envoyer le formulaire
+      fireEvent.submit(form);
 
       // Vérifications
       expect(handleSubmit).toHaveBeenCalled();
@@ -102,10 +98,8 @@ describe("Je suis connecté en tant qu'employé", () => {
 
   describe("Quand j'upload un fichier", () => {
     test("La fonction handleChangeFile est appelée", () => {
-      // Simuler l'élément <input>
-      document.body.innerHTML = `
-      <input data-testid="file" type="file" />
-    `;
+      // Afficher la page NewBill
+      document.body.innerHTML = NewBillUI();
 
       // Sélectionner l'élément <input>
       const input = document.querySelector(`input[data-testid="file"]`);
@@ -129,6 +123,7 @@ describe("Je suis connecté en tant qu'employé", () => {
 
       // Vérifier que handleChangeFile a été appelé
       expect(handleChangeFile).toHaveBeenCalled();
+      expect(handleChangeFile).toHaveBeenCalledTimes(1);
     });
 
     test("Le fichier est valide", () => {
@@ -163,27 +158,27 @@ describe("Je suis connecté en tant qu'employé", () => {
   });
 
   describe("Quand j'ai envoyé le formulaire", () => {
-    // Mock ROUTES_PATH
+    // Définir le chemin des routes (mock)
     const ROUTES_PATH = {
-      Bills: "/bills", // Define the expected route for Bills
+      Bills: "/bills", // Définir la route attendue pour la page Bills
     };
 
     test("Alors je suis redirigé vers la page Bills", () => {
-      // Mock the onNavigate function
+      // Mock de la fonction onNavigate
       const onNavigate = jest.fn();
 
-      // Create a mock of the form submission
+      // Création d'un mock pour la soumission du formulaire
       const form = document.createElement("form");
       form.addEventListener("submit", (e) => {
-        e.preventDefault(); // Prevent actual navigation
-        onNavigate(ROUTES_PATH["Bills"]);
+        e.preventDefault(); // Empêcher la navigation réelle
+        onNavigate(ROUTES_PATH["Bills"]); // Appeler la navigation vers la page Bills
       });
 
-      // Simulate the form submission
+      // Simuler la soumission du formulaire
       const submitEvent = new Event("submit");
       form.dispatchEvent(submitEvent);
 
-      // Verify that onNavigate was called with the correct argument
+      // Vérifier que onNavigate a été appelée avec le bon argument
       expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"]);
     });
   });
@@ -192,19 +187,25 @@ describe("Je suis connecté en tant qu'employé", () => {
 describe("je suis connecté en tant qu'employee", () => {
   describe("j'upload un fichier", () => {
     test("le fichier est valide", () => {
+      // Créer un fichier avec un contenu valide et une extension correcte
       const file = new File(["content"], "image.jpg", { type: "image/jpeg" });
+      // Vérifier que le type du fichier correspond au type attendu
       expect(file.type).toBe("image/jpeg");
     });
 
     test("le fichier n'est pas valide", () => {
+      // Créer un fichier avec un type incorrect
       const file = new File(["content"], "document.pdf", {
         type: "application/pdf",
       });
+      // Vérifier que le type du fichier ne correspond pas à un type attendu (image/pdf n'existe pas ici)
       expect(file.type).not.toBe("image/pdf");
     });
 
     test("le fichier est vide", () => {
+      // Créer un fichier sans contenu (vide) et sans type défini
       const file = new File([""], "empty-file", { type: "" });
+      // Vérifier que la taille du fichier est bien égale à 0 (fichier vide)
       expect(file.size).toBe(0);
     });
   });
