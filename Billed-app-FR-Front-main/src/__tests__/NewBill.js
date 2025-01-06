@@ -2,12 +2,17 @@
  * @jest-environment jsdom
  */
 
-import { screen, fireEvent } from "@testing-library/dom";
+import { screen, fireEvent, waitFor } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
+import store from "../__mocks__/store";
+import mockstore from "../__mocks__/store";
+
+import router from "../app/Router.js";
+jest.mock("../app/store", () => mockstore);
 
 // Mock pour le localStorage
 beforeEach(() => {
@@ -22,8 +27,8 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("Je suis connecté en tant qu'employé", () => {
-  describe("Quand je suis sur la page NewBill", () => {
+describe("Given I am connected as an employee", () => {
+  describe("When i am on NewBill page", () => {
     test("La page NewBill doit afficher les différents champs", () => {
       const billForm = screen.getByTestId("form-new-bill");
       expect(billForm).toBeInTheDocument();

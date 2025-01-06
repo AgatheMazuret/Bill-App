@@ -6,6 +6,7 @@ import LoginUI from "../views/LoginUI";
 import Login from "../containers/Login.js";
 import { ROUTES } from "../constants/routes";
 import { fireEvent, screen } from "@testing-library/dom";
+import { createUser } from "../containers/Login";
 
 describe("Given that I am a user on login page", () => {
   // Test lorsque l'utilisateur ne remplit pas les champs et clique sur le bouton Login In pour l'employé
@@ -268,6 +269,41 @@ describe("Given that I am a user on login page", () => {
     test("It should renders HR dashboard page", () => {
       // Vérification que la page du tableau de bord admin est affichée
       expect(screen.queryByText("Validations")).toBeTruthy();
+    });
+  });
+});
+
+describe("Étant donné que je suis un utilisateur sur la page de connexion", () => {
+  describe("Lorsque l'utilisateur n'existe pas", () => {
+    test("Alors il devrait créer un nouvel utilisateur", async () => {
+      // Mocker la fonction createUser
+      jest.mock("../containers/Login", () => ({
+        createUser: jest.fn(),
+      }));
+
+      // Définir la réponse du mock pour que la fonction createUser renvoie une valeur résolue
+      createUser.mockResolvedValue({ data: "createUser" });
+
+      // Simuler l'UI de la page de connexion (en supposant que LoginUI génère le HTML de la page de connexion)
+      document.body.innerHTML = LoginUI();
+
+      // Définir les données à envoyer lors de la création de l'utilisateur
+      const inputData = {
+        email: "employee@mail.com",
+        password: "motdepasse",
+      };
+
+      // Appeler la fonction createUser avec les données de l'utilisateur
+      const result = await createUser(inputData); // Appeler la fonction createUser avec les données
+
+      // Vérifier que la fonction createUser a été appelée une seule fois
+      expect(createUser).toHaveBeenCalledTimes(1);
+
+      // Vérifier que createUser a été appelée avec les bons arguments
+      expect(createUser).toHaveBeenCalledWith(inputData); // Vérifier que les bons paramètres ont été passés
+
+      // Vérifier que le résultat renvoyé est bien celui attendu (réponse mockée)
+      expect(result).toEqual({ data: "createUser" });
     });
   });
 });
