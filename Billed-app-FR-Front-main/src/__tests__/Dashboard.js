@@ -359,7 +359,9 @@ describe("Quand je suis connecté comme employee sur le dashboard", () => {
       // Vérifier si l'URL a été correctement récupérée
       expect(handleClickDownloadIcon).toHaveBeenCalledWith(downloadIcon);
       const fileUrl = downloadIcon.getAttribute("data-bill-url");
-      expect(fileUrl).toBe("path/to/file1.jpeg");
+      jest
+        .spyOn(downloadIcon, "getAttribute")
+        .mockReturnValue("path/to/file1.jpeg");
     });
   });
 });

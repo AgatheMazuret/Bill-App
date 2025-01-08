@@ -41,31 +41,25 @@ export default class {
         .bills()
         .list()
         .then((snapshot) => {
-          // Transformer chaque document dans le snapshot
           const bills = snapshot.map((doc) => {
             try {
-              // Retourner un nouvel objet avec la date et le statut formatés
               return {
-                ...doc, // Copier toutes les propriétés du document
-                date: formatDate(doc.date), // Formater la date
-                status: formatStatus(doc.status), // Formater le statut
+                ...doc,
+                date: formatDate(doc.date),
+                status: formatStatus(doc.status),
               };
             } catch (e) {
-              // Si une erreur se produit, afficher l'erreur et les données problématiques
+              // if for some reason, corrupted data was introduced, we manage here failing formatDate function
+              // log the error and return unformatted date in that case
               console.log(e, "for", doc);
-              // Retourner les données sans formatage de la date
               return {
-                ...doc, // Copier toutes les propriétés du document
-                date: doc.date, // Garder la date non formatée
-                status: formatStatus(doc.status), // Formater seulement le statut
+                ...doc,
+                date: doc.date,
+                status: formatStatus(doc.status),
               };
             }
           });
-
-          // Afficher la longueur de la liste des factures
           console.log("length", bills.length);
-
-          // Retourner la liste des factures
           return bills;
         });
     }
