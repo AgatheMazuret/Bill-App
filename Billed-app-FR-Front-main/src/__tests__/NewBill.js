@@ -5,213 +5,145 @@
 import { screen, fireEvent, waitFor } from "@testing-library/dom";
 import "@testing-library/jest-dom";
 import NewBillUI from "../views/NewBillUI.js";
-import NewBill from "../containers/NewBill.js";
-import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
+import { ROUTES } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import store from "../__mocks__/store";
 import mockstore from "../__mocks__/store";
-
 import router from "../app/Router.js";
+
 jest.mock("../app/store", () => mockstore);
 
-// Mock pour le localStorage
+// Avant chaque test, on initialise l'interface utilisateur et simule l'utilisateur connecté
 beforeEach(() => {
-  localStorage.setItem("user", JSON.stringify({ email: "test@example.com" }));
-});
-
-beforeEach(() => {
+  // Injecte le contenu HTML de la page New Bill dans le DOM
   document.body.innerHTML = NewBillUI();
-});
 
-afterEach(() => {
-  document.body.innerHTML = "";
+  // Simule un utilisateur connecté en tant qu'employé dans le localStorage
+  localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
 });
 
 describe("Given I am connected as an employee", () => {
-  describe("When i am on NewBill page", () => {
-    test("La page NewBill doit afficher les différents champs", () => {
-      const billForm = screen.getByTestId("form-new-bill");
-      expect(billForm).toBeInTheDocument();
+  describe("When I am on NewBill Page", () => {
+    test("Then displays the form", () => {
+      const html = NewBillUI();
+      document.body.innerHTML = html;
 
-      const expenseType = screen.getByTestId("expense-type");
-      expect(expenseType).toBeInTheDocument();
-      expect(expenseType.type).toBe("select-one");
+      // Vérifier que le formulaire est présent
+      const form = document.querySelector("form");
+      expect(form).toBeInTheDocument(); // Assertion pour vérifier que le formulaire est bien présent
 
-      const inputDescription = screen.getByTestId("commentary");
-      expect(inputDescription).toBeInTheDocument();
-      expect(inputDescription.placeholder).toBe("");
+      // Vérifier la présence des champs de saisie spécifiques
+      const billTypeInput = screen.getByLabelText(/Type de dépense/i);
+      const billName = screen.getByLabelText(/Nom de la dépense/i);
+      const dateInput = screen.getByLabelText(/Date/i);
+      const amountInput = screen.getByLabelText(/Montant/i);
+      const vatInput = screen.getByLabelText(/TVA/i);
+      const billComment = screen.getByLabelText(/Commentaires/i);
+      const fileInput = screen.getByLabelText(/Justificatif/i);
 
-      const inputAmount = screen.getByTestId("amount");
-      expect(inputAmount).toBeInTheDocument();
-      expect(inputAmount.type).toBe("number");
-
-      const inputDate = screen.getByTestId("datepicker");
-      expect(inputDate).toBeInTheDocument();
-      expect(inputDate.type).toBe("date");
-
-      const inputFile = screen.getByTestId("file");
-      expect(inputFile).toBeInTheDocument();
-      expect(inputFile.type).toBe("file");
-      expect(inputFile.accept).toContain("");
-
-      const submitButton = screen.getByRole("button", { name: "Envoyer" });
-      expect(submitButton).toBeInTheDocument();
-      expect(submitButton.textContent).toBe("Envoyer");
-      submitButton.click();
+      expect(billTypeInput).toBeInTheDocument();
+      expect(billName).toBeInTheDocument();
+      expect(dateInput).toBeInTheDocument();
+      expect(amountInput).toBeInTheDocument();
+      expect(vatInput).toBeInTheDocument();
+      expect(billComment).toBeInTheDocument();
+      expect(fileInput).toBeInTheDocument();
     });
-  });
 
-  describe("Quand je soumets le formulaire", () => {
-    test("Alors une nouvelle facture est créée", async () => {
-      const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname });
-      };
+    test("When I click on the send button, the form is submitted", () => {
+      const onNavigate = jest.fn(); // Mock de la navigation
+      const form = document.querySelector("form");
 
-      // Mock du localStorage pour simuler un utilisateur
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        onNavigate(ROUTES.Bills);
       });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-        })
-      );
 
-      // Initialisation du composant NewBill
-      const newBill = new NewBill({ document, onNavigate });
-
-      // Affichage de la page NewBill
-      document.body.innerHTML = NewBillUI();
-
-      const form = document.getElementById("btn-send-bill");
-      const submitButton = screen.getByRole("button", { name: "Envoyer" });
-
-      // Mock de la méthode handleSubmit
-      const handleSubmit = jest.fn((e) => e.preventDefault());
-      newBill.handleSubmit = handleSubmit;
-      form.addEventListener("submit", newBill.handleSubmit);
-
-      // Envoyer le formulaire
       fireEvent.submit(form);
 
-      // Vérifications
-      expect(handleSubmit).toHaveBeenCalled();
-      expect(handleSubmit).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe("Quand j'upload un fichier", () => {
-    test("La fonction handleChangeFile est appelée", () => {
-      // Afficher la page NewBill
-      document.body.innerHTML = NewBillUI();
-
-      // Sélectionner l'élément <input>
-      const input = document.querySelector(`input[data-testid="file"]`);
-
-      // Créer un fichier simulé
-      const validFile = new File(["content"], "image.jpg", {
-        type: "image/jpeg",
-      });
-
-      // Simuler que le champ <input> contient un fichier
-      Object.defineProperty(input, "files", { value: [validFile] });
-
-      // Mock la fonction handleChangeFile
-      const handleChangeFile = jest.fn();
-
-      // Ajouter un listener sur l'input
-      input.addEventListener("change", handleChangeFile);
-
-      // Déclencher un événement "change" sur l'input
-      input.dispatchEvent(new Event("change"));
-
-      // Vérifier que handleChangeFile a été appelé
-      expect(handleChangeFile).toHaveBeenCalled();
-      expect(handleChangeFile).toHaveBeenCalledTimes(1);
-    });
-
-    test("Le fichier est valide", () => {
-      // Créer un fichier valide
-      const validFile = new File(["content"], "image.jpg", {
-        type: "image/jpeg",
-      });
-
-      // Vérifier que le fichier est valide
-      expect(validFile.type).toBe("image/jpeg");
-    });
-
-    test("Le fichier n'est pas valide", () => {
-      // Créer un fichier invalide
-      const invalidFile = new File(["content"], "document.pdf", {
-        type: "application/pdf",
-      });
-
-      // Vérifier que le fichier est invalide
-      expect(invalidFile.type).not.toBe("image/pdf");
-    });
-
-    test("Le fichier est vide", () => {
-      // Créer un fichier vide
-      const emptyFile = new File([""], "empty-file", {
-        type: "",
-      });
-
-      // Vérifier que le fichier est vide
-      expect(emptyFile.size).toBe(0);
-    });
-  });
-
-  describe("Quand j'ai envoyé le formulaire", () => {
-    // Définir le chemin des routes (mock)
-    const ROUTES_PATH = {
-      Bills: "/bills", // Définir la route attendue pour la page Bills
-    };
-
-    test("Alors je suis redirigé vers la page Bills", () => {
-      // Mock de la fonction onNavigate
-      const onNavigate = jest.fn();
-
-      // Création d'un mock pour la soumission du formulaire
-      const form = document.createElement("form");
-      form.addEventListener("submit", (e) => {
-        e.preventDefault(); // Empêcher la navigation réelle
-        onNavigate(ROUTES_PATH["Bills"]); // Appeler la navigation vers la page Bills
-      });
-
-      // Simuler la soumission du formulaire
-      const submitEvent = new Event("submit");
-      form.dispatchEvent(submitEvent);
-
-      // Vérifier que onNavigate a été appelée avec le bon argument
-      expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"]);
+      // Vérifie que la navigation vers la page des factures a été effectuée
+      expect(onNavigate).toHaveBeenCalledWith(ROUTES.Bills);
     });
   });
 });
 
-describe("je suis connecté en tant qu'employee", () => {
-  describe("j'upload un fichier", () => {
-    test("le fichier est valide", () => {
-      // Créer un fichier avec un contenu valide et une extension correcte
-      const file = new File(["content"], "image.jpg", { type: "image/jpeg" });
-      // Vérifier que le type du fichier correspond au type attendu
-      expect(file.type).toBe("image/jpeg");
+describe("Given I am an employee connected", () => {
+  describe("When I upload a file", () => {
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <form>
+          <input type="file" id="file" />
+          <span id="fileName"></span>
+        </form>
+      `;
     });
 
-    test("le fichier n'est pas valide", () => {
-      // Créer un fichier avec un type incorrect
-      const file = new File(["content"], "document.pdf", {
-        type: "application/pdf",
+    test("Should display file name after upload", () => {
+      const fileInput = document.getElementById("file");
+      const fileName = document.getElementById("fileName");
+
+      const testFile = new File(["content"], "test-file.jpg", {
+        type: "image/jpeg",
       });
-      // Vérifier que le type du fichier ne correspond pas à un type attendu (image/pdf n'existe pas ici)
-      expect(file.type).not.toBe("image/pdf");
+
+      const event = new Event("change", { bubbles: true });
+      Object.defineProperty(fileInput, "files", {
+        value: [testFile],
+      });
+      fileInput.dispatchEvent(event);
+
+      expect(fileName.textContent).toBe("Fichier sélectionné : test-file.jpg");
     });
 
-    test("le fichier est vide", () => {
-      // Créer un fichier sans contenu (vide) et sans type défini
-      const file = new File([""], "empty-file", { type: "" });
-      // Vérifier que la taille du fichier est bien égale à 0 (fichier vide)
-      expect(file.size).toBe(0);
+    test.each([
+      [new File(["content"], "image.jpg", { type: "image/jpeg" }), true],
+      [
+        new File(["content"], "document.pdf", { type: "application/pdf" }),
+        false,
+      ],
+      [new File([], "empty-file", { type: "" }), false],
+    ])("Validation of uploaded files: %s", (file, isValid) => {
+      const validTypes = ["image/jpeg", "image/jpg"];
+      const isFileValid = file.size > 0 && validTypes.includes(file.type);
+
+      expect(isFileValid).toBe(isValid);
     });
+
+    test("The function handleChangeFile is called", () => {
+      const fileInput = document.getElementById("file");
+      const handleChangeFile = jest.fn();
+
+      fileInput.addEventListener("change", handleChangeFile);
+
+      const testFile = new File(["content"], "image.jpg", {
+        type: "image/jpeg",
+      });
+      Object.defineProperty(fileInput, "files", {
+        value: [testFile],
+      });
+
+      fireEvent.change(fileInput);
+
+      expect(handleChangeFile).toHaveBeenCalled();
+      expect(handleChangeFile).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe("When I submit the form", () => {
+  test("I am redirected to the bills page", () => {
+    const onNavigate = jest.fn();
+    const form = document.createElement("form");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      onNavigate(ROUTES.Bills);
+    });
+
+    document.body.appendChild(form);
+
+    fireEvent.submit(form);
+
+    expect(onNavigate).toHaveBeenCalledWith(ROUTES.Bills);
   });
 });

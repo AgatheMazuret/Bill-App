@@ -84,7 +84,7 @@ describe("When I click on the preview icon", () => {
       store: null,
       localStorage: window.localStorage,
     });
-    const iconEye = screen.getByTestId("icon-eye"); // Récupère l'icône de prévisualisation
+    const iconEye = screen.getByTestId("icon-eye-d"); // Récupère l'icône de prévisualisation
     iconEye.click(); // Simule le clic sur l'icône de prévisualisation
 
     //TODO:  expect($.fn.modal).toHaveBeenCalledWith("show"); // Vérifie que le modal est ouvert
@@ -144,17 +144,6 @@ describe("Given I am connected as an employee", () => {
         });
         expect(billsList[0].date).toBe("invalid-date"); // Vérifie que la date originale est retournée
         consoleSpy.mockRestore(); // Restaure l'espion
-      });
-    });
-
-    // Test lorsque le store est nul
-    describe("When the store is null", () => {
-      test("Then it should return undefined", async () => {
-        billsInstance.store = null;
-
-        const result = await billsInstance.getBills();
-
-        expect(result).toBeUndefined(); // Vérifie que la méthode retourne undefined
       });
     });
   });

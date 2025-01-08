@@ -273,9 +273,9 @@ describe("Given that I am a user on login page", () => {
   });
 });
 
-describe("Étant donné que je suis un utilisateur sur la page de connexion", () => {
-  describe("Lorsque l'utilisateur n'existe pas", () => {
-    test("Alors il devrait créer un nouvel utilisateur", async () => {
+describe("Given I am an user in the login page", () => {
+  describe("When the user does not exist", () => {
+    test("Then he should create a new user", async () => {
       // Mocker la fonction createUser
       jest.mock("../containers/Login", () => ({
         createUser: jest.fn(),
