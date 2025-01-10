@@ -9,8 +9,8 @@ import { fireEvent, screen } from "@testing-library/dom";
 import { localStorageMock } from "../__mocks__/localStorage";
 
 describe("Étant donné que je suis un utilisateur employé sur la page de connexion", () => {
-  describe("Lorsque je ne remplis pas les champs et que je clique sur le bouton Connexion Employé", () => {
-    test("Alors, la page de connexion devrait être rendue", () => {
+  describe("When I do not fill in the fields and I click on the Employee Login button", () => {
+    test("Then, the login page should be rendered", () => {
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
@@ -44,7 +44,7 @@ describe("Étant donné que je suis un utilisateur employé sur la page de conne
   });
 
   // Scénario : l'utilisateur remplit les champs dans un format incorrect et clique sur le bouton de connexion en tant qu'employé
-  describe("When I do fill fields in incorrect format and I click on employee button Login In", () => {
+  describe("When I do fill fields in incorrect format and I click on employee login button", () => {
     test("Then It should renders Login page", () => {
       // Mock du localStorage pour simuler le stockage des données utilisateur
       Object.defineProperty(window, "localStorage", {
@@ -55,7 +55,7 @@ describe("Étant donné que je suis un utilisateur employé sur la page de conne
       window.localStorage.setItem(
         "user",
         JSON.stringify({
-          type: "Employee", // Type d'utilisateur : Employé
+          type: "Employee",
         })
       );
 
