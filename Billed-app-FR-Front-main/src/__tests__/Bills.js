@@ -10,104 +10,134 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
 import Bills from "../containers/Bills.js";
-
 import router from "../app/Router.js";
 jest.mock("../app/store", () => mockStore);
 
-// Test the UI
 describe("Given I am connected as an employee", () => {
+  // Test pour vérifier que l'icône des factures est bien mise en surbrillance dans la vue verticale
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
+      // 1. Initialisation du localStorage avec un utilisateur de type Employee
+      // On simule un localStorage avec l'outil "localStorageMock" pour manipuler les données du navigateur
       Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
+        value: localStorageMock, // "localStorageMock" est un mock que vous avez défini ailleurs dans votre code
       });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-        })
-      );
+      // L'utilisateur est défini comme étant de type "Employee"
+      window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
+
+      // 2. Création de l'élément root et ajout au DOM pour initialiser la navigation
+      // Cela permet de simuler l'environnement du navigateur (le DOM) afin de tester la navigation
       const root = document.createElement("div");
-      root.setAttribute("id", "root");
-      document.body.append(root);
+      root.setAttribute("id", "root"); // Définit un identifiant unique pour l'élément root
+      document.body.append(root); // Ajoute l'élément "root" au body du document
+
+      // 3. Initialisation du système de routage
+      // Appel de la fonction "router()" pour initialiser la navigation dans l'application
       router();
+
+      // 4. Navigation vers la page des factures
+      // La fonction "onNavigate" est appelée pour simuler la navigation vers la page des factures
       window.onNavigate(ROUTES_PATH.Bills);
+
+      // 5. Vérification de l'icône active dans la barre de navigation
+      // On attend que l'icône soit présente dans le DOM
       await waitFor(() => screen.getByTestId("icon-window"));
+
+      // 6. Récupération de l'icône "window" dans la barre de navigation
       const windowIcon = screen.getByTestId("icon-window");
+
+      // 7. Vérification si l'icône a la classe CSS "active-icon" pour indiquer qu'elle est activée
       expect(windowIcon.classList.contains("active-icon")).toBe(true);
     });
+
+    // Test pour vérifier que les factures sont triées de la plus ancienne à la plus récente
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
+
+      // Récupération de toutes les dates affichées sur la page
       const dates = screen
         .getAllByText(
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
         )
         .map((a) => a.innerHTML);
+
+      // Tri des dates de manière anti-chronologique
       const antiChrono = (a, b) => (a < b ? 1 : -1);
       const datesSorted = [...dates].sort(antiChrono);
+
+      // Vérification que les dates sont bien triées
       expect(dates).toEqual(datesSorted);
     });
 
     describe("When I click on the new bill button", () => {
+      // Test pour vérifier que le bouton de nouvelle facture redirige vers la page correspondante
       test("Then I should be redirected to the New Bill page", () => {
-        // Set up the html
+        // Initialisation de la page Bills
         document.body.innerHTML = BillsUI({ data: bills });
-        // Define navigation logic
+
+        // Logique de navigation pour simuler un redirection vers la page de création de facture
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
-        // Create an instance of the Bills class
+
+        // Création de l'instance Bills avec les fonctions de navigation et de stockage
         const billsInstance = new Bills({
           document,
           onNavigate,
-          store: null, // test doesn't make API request, but just simulates UI interactions
+          store: null, // Pas besoin de faire une requête API pour ce test
           localStorage: window.localStorage,
         });
-        // Select concerned button
+
+        // Sélection du bouton "Nouvelle facture"
         const buttonNewBill = screen.getByTestId("btn-new-bill");
         const handleClickNewBill = jest.fn(billsInstance.handleClickNewBill);
         buttonNewBill.addEventListener("click", handleClickNewBill);
-        // Simulate button click
+
+        // Simulation du clic sur le bouton
         userEvent.click(buttonNewBill);
 
+        // Vérification que la fonction a bien été appelée et que la page de nouvelle facture s'affiche
         expect(handleClickNewBill).toHaveBeenCalled();
         expect(screen.getByTestId("form-new-bill")).toBeTruthy();
       });
     });
 
     describe("When I click on the preview icon", () => {
+      // Test pour vérifier que l'icône de prévisualisation ouvre bien la modale
       test("Then the modal should open", () => {
-        // Mock the modal function
+        // Mock de la fonction modal
         $.fn.modal = jest.fn();
-        // Mock the DOM environment for the test
+
+        // Simulation de la structure du DOM avec l'icône de prévisualisation
         document.body.innerHTML = `
-					<div data-testid="icon-eye" data-bill-url="https://example.com/bill.jpg"></div>
-					<div id="modaleFile">
-						<div class="modal-body"></div>
-					</div>
-				`;
-        // Create an instance of the Bills class
+          <div data-testid="icon-eye" data-bill-url="https://example.com/bill.jpg"></div>
+          <div id="modaleFile">
+            <div class="modal-body"></div>
+          </div>
+        `;
+
+        // Création de l'instance Bills
         const billsInstance = new Bills({
           document,
           onNavigate: jest.fn(),
           store: null,
           localStorage: window.localStorage,
         });
-        // Simulate clicking on the preview icon
+
+        // Simulation du clic sur l'icône de prévisualisation
         const iconEye = screen.getByTestId("icon-eye");
         iconEye.click();
 
+        // Vérification que la modale s'est bien ouverte
         expect($.fn.modal).toHaveBeenCalledWith("show");
       });
     });
   });
-});
 
-// Test the getBills function
-describe("Given I am connected as an employee", () => {
+  // Test pour vérifier le bon fonctionnement de la fonction getBills
   let billsInstance;
   beforeEach(() => {
-    // Set up the environment
+    // Initialisation de l'environnement pour le test
     document.body.innerHTML = BillsUI({ data: bills });
     const onNavigate = jest.fn();
     billsInstance = new Bills({
@@ -128,16 +158,20 @@ describe("Given I am connected as an employee", () => {
   });
 
   describe("When I call getBills", () => {
+    // Test pour vérifier que les factures sont bien triées par date, du plus récent au plus ancien
     test("Then it should return a sorted list of bills by date in descending order", async () => {
       const sortedBills = await billsInstance.getBills();
+
+      // Vérification que la liste des factures a bien été triée par date
       expect(sortedBills.length).toBe(2);
       expect(sortedBills[0].date).toBe("1 Jan. 22");
       expect(sortedBills[1].date).toBe("1 Jan. 21");
     });
 
     describe("When formatDate fails", () => {
+      // Test pour vérifier que si formatDate échoue, l'erreur est bien capturée et la date originale est retournée
       test("Then it should catch an error, log it, and return the original date", async () => {
-        // The store returns a bill with an invalid date
+        // Simulation d'une facture avec une date invalide
         billsInstance.store.bills = jest.fn(() => ({
           list: jest.fn(() =>
             Promise.resolve([
@@ -146,23 +180,25 @@ describe("Given I am connected as an employee", () => {
           ),
         }));
 
-        // When I call getBills
+        // Lorsque getBills est appelé
         const consoleSpy = jest.spyOn(console, "log");
         const billsList = await billsInstance.getBills();
 
-        // The error should be logged
+        // Vérification que l'erreur est bien loggée
         expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error), "for", {
           id: 1,
           date: "invalid-date",
           status: "pending",
         });
-        // The bill should have the original date
+
+        // Vérification que la date originale est bien retournée
         expect(billsList[0].date).toBe("invalid-date");
         consoleSpy.mockRestore();
       });
     });
 
     describe("When the store is null", () => {
+      // Test pour vérifier que si le store est null, la fonction retourne undefined
       test("Then it should return undefined", async () => {
         billsInstance.store = null;
 
@@ -172,10 +208,8 @@ describe("Given I am connected as an employee", () => {
       });
     });
   });
-});
 
-// test d'intégration GET
-describe("Given I am a user connected as an employee", () => {
+  // Test d'intégration GET pour vérifier que les factures sont bien récupérées via l'API
   describe("When I am on Bills page", () => {
     test("Then fetches bills from mock API GET", async () => {
       Object.defineProperty(window, "localStorage", {
@@ -227,6 +261,7 @@ describe("Given I am a user connected as an employee", () => {
       afterEach(() => {
         jest.clearAllMocks();
       });
+
       test("Then fetches bills from an API and fails with 404 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
           return {

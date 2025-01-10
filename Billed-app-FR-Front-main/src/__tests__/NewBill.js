@@ -103,10 +103,8 @@ describe("Given I am connected as an employee", () => {
       });
     });
   });
-});
 
-// test d'intégration POST
-describe("Given I am a user connected as Employee", () => {
+  // test d'intégration POST
   describe("When I submit a new bill on NewBill page", () => {
     test("Then it should create a new bill to mock API POST", async () => {
       Object.defineProperty(window, "localStorage", {
