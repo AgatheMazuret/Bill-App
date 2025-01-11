@@ -46,14 +46,14 @@ export default class NewBill {
       // Stocke le nom du fichier dans une propriété de la classe
       this.fileName = fileName;
 
-      // Prépare les données du fichier à envoyer via un formulaire
+      // Crée un nouvel objet FormData
       const formData = new FormData();
-      formData.append("file", file); // Ajoute le fichier
-      formData.append("email", email); // Ajoute l'email de l'utilisateur
-    } else {
-      alert("Ce type de fichier n'est pas autorisé");
 
-      // Stocker le fichier temporairement sans créer une facture définitive
+      // Ajoute le fichier et l'email à l'objet FormData
+      formData.append("file", file);
+      formData.append("email", email);
+
+      // Vous pouvez maintenant envoyer formData dans votre requête API si nécessaire
       this.store
         .bills()
         .create({
@@ -65,6 +65,14 @@ export default class NewBill {
           this.billId = key; // Stocke l'ID temporaire
         })
         .catch((error) => console.error(error));
+    } else {
+      alert("Ce type de fichier n'est pas autorisé");
+
+      // Réinitialisation du fichier en cas de type non autorisé
+      const fileInput = this.document.querySelector(
+        `input[data-testid="file"]`
+      );
+      fileInput.value = ""; // Nettoyer l'input
     }
   };
 

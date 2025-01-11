@@ -1,6 +1,5 @@
 /**
  * @jest-environment jsdom
- *
  */
 
 import { screen, waitFor } from "@testing-library/dom"; // Import de Testing Library pour interagir avec le DOM
@@ -68,7 +67,7 @@ describe("Given I am connected as an employee", () => {
         .map((a) => a.innerHTML); // On extrait la date en format texte
 
       // Fonction pour trier les dates en ordre décroissant (de la plus récente à la plus ancienne)
-      const antiChrono = (a, b) => (a < b ? 1 : -1);
+      const antiChrono = (a, b) => (a < b ? 1 : +1);
       const datesSorted = [...dates].sort(antiChrono);
 
       // On vérifie que les dates récupérées sont bien triées de la plus récente à la plus ancienne
