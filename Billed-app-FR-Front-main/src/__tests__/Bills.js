@@ -43,10 +43,10 @@ describe("Given I am connected as an employee", () => {
       router();
       window.onNavigate(ROUTES_PATH.Bills);
 
-      // On attend que l'icône de la fenêtre soit présente dans le DOM
+      // On attend que l'icône window soit présente dans le DOM
       await waitFor(() => screen.getByTestId("icon-window"));
 
-      // On récupère l'icône de la fenêtre
+      // On récupère l'icône de window dans l'interface
       const windowIcon = screen.getByTestId("icon-window");
 
       // On vérifie que l'icône de la fenêtre contient la classe "active-icon", ce qui signifie qu'elle est mise en surbrillance

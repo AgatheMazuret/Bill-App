@@ -126,7 +126,7 @@ export default class {
   handleClickDownloadIcon = (icon) => {
     // Récupère l'URL du fichier à partir de l'attribut 'data-bill-url' de l'icône
     const fileUrl = icon.getAttribute("data-bill-url");
-
+    const iconDownload = document.getElementById("icon-download-d");
     // Vérifie si l'URL existe
     if (fileUrl) {
       // Crée un élément de lien (a) temporaire pour télécharger le fichier
@@ -136,14 +136,14 @@ export default class {
       link.href = fileUrl;
 
       // Définit le nom du fichier à télécharger (ici, "bill.jpg")
-      const fileName = "bill/jpg";
+      const fileName = "bill.jpg"; // Correction du nom du fichier
       link.download = fileName;
 
       // Ajoute le lien à la page pour qu'il soit cliquable
       document.body.appendChild(link);
 
       // Simule un clic sur le lien pour lancer le téléchargement
-      link.click();
+      iconDownload.click();
 
       // Supprime le lien de la page après le téléchargement
       document.body.removeChild(link);
