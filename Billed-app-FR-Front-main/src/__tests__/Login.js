@@ -2,93 +2,96 @@
  * @jest-environment jsdom
  */
 
-import LoginUI from "../views/LoginUI"; // Importation du composant UI pour la page de login
-import Login from "../containers/Login.js"; // Importation du container Login
-import { ROUTES } from "../constants/routes"; // Importation des constantes pour la navigation
-import { fireEvent, screen } from "@testing-library/dom"; // Importation de l'outil de test pour simuler des événements et interagir avec la DOM
+import LoginUI from "../views/LoginUI"; // Importation du composant d'interface de connexion
+import Login from "../containers/Login.js"; // Importation du conteneur de connexion
+import { ROUTES } from "../constants/routes"; // Importation des routes définies
+import { fireEvent, screen } from "@testing-library/dom"; // Importation de la bibliothèque pour simuler des événements DOM
 
-// Début du bloc de test pour la page de login en tant qu'utilisateur "Employee" (employé)
 describe("Given that I am a user on login page", () => {
-  // Test d'intégration : Vérification de la page de login quand l'utilisateur ne remplit pas les champs
+  // Décrit le test pour un utilisateur sur la page de connexion
   describe("When I do not fill fields and I click on employee button Login In", () => {
+    // Cas où l'utilisateur clique sur le bouton de connexion sans remplir les champs
     test("Then It should renders Login page", () => {
-      document.body.innerHTML = LoginUI(); // On rend le composant LoginUI
+      // Vérifie si la page de connexion se rend
+      document.body.innerHTML = LoginUI(); // Charge l'interface de connexion dans le DOM
 
-      const inputEmailUser = screen.getByTestId("employee-email-input"); // Récupération du champ pour l'email de l'employé
-      expect(inputEmailUser.value).toBe(""); // Vérification que le champ email est vide au départ
+      const inputEmailUser = screen.getByTestId("employee-email-input"); // Récupère l'élément input pour l'email de l'employé
+      expect(inputEmailUser.value).toBe(""); // Vérifie que le champ email est vide
 
-      const inputPasswordUser = screen.getByTestId("employee-password-input"); // Récupération du champ pour le mot de passe
-      expect(inputPasswordUser.value).toBe(""); // Vérification que le champ mot de passe est vide au départ
+      const inputPasswordUser = screen.getByTestId("employee-password-input"); // Récupère l'élément input pour le mot de passe
+      expect(inputPasswordUser.value).toBe(""); // Vérifie que le champ mot de passe est vide
 
-      const form = screen.getByTestId("form-employee"); // Récupération du formulaire de login de l'employé
-      const handleSubmit = jest.fn((e) => e.preventDefault()); // Création d'une fonction factice pour empêcher l'envoi du formulaire
+      const form = screen.getByTestId("form-employee"); // Récupère le formulaire de connexion de l'employé
+      const handleSubmit = jest.fn((e) => e.preventDefault()); // Crée une fonction pour empêcher l'envoi du formulaire
 
-      form.addEventListener("submit", handleSubmit); // Ajout d'un écouteur d'événement pour le formulaire
-      fireEvent.submit(form); // Simulation de l'envoi du formulaire
-      expect(screen.getByTestId("form-employee")).toBeTruthy(); // Vérification que le formulaire existe toujours
+      form.addEventListener("submit", handleSubmit); // Ajoute un écouteur pour l'événement de soumission
+      fireEvent.submit(form); // Simule un clic sur le bouton de soumission du formulaire
+      expect(screen.getByTestId("form-employee")).toBeTruthy(); // Vérifie que le formulaire est toujours présent
     });
   });
 
-  // Test d'intégration : Vérification de la page de login quand l'utilisateur entre un format incorrect dans les champs
   describe("When I do fill fields in incorrect format and I click on employee button Login In", () => {
+    // Cas où l'utilisateur remplit les champs avec un format incorrect
     test("Then It should renders Login page", () => {
-      document.body.innerHTML = LoginUI(); // On rend le composant LoginUI
+      document.body.innerHTML = LoginUI(); // Charge l'interface de connexion dans le DOM
 
-      const inputEmailUser = screen.getByTestId("employee-email-input"); // Récupération du champ email
-      fireEvent.change(inputEmailUser, { target: { value: "pasunemail" } }); // On simule un changement dans le champ email avec un mauvais format
-      expect(inputEmailUser.value).toBe("pasunemail"); // Vérification que l'email a bien été modifié
+      const inputEmailUser = screen.getByTestId("employee-email-input"); // Récupère l'élément email
+      fireEvent.change(inputEmailUser, { target: { value: "pasunemail" } }); // Modifie l'email avec une valeur incorrecte
+      expect(inputEmailUser.value).toBe("pasunemail"); // Vérifie que l'email est bien changé
 
-      const inputPasswordUser = screen.getByTestId("employee-password-input"); // Récupération du champ mot de passe
-      fireEvent.change(inputPasswordUser, { target: { value: "azerty" } }); // On simule un changement dans le champ mot de passe
-      expect(inputPasswordUser.value).toBe("azerty"); // Vérification que le mot de passe a bien été modifié
+      const inputPasswordUser = screen.getByTestId("employee-password-input"); // Récupère l'élément mot de passe
+      fireEvent.change(inputPasswordUser, { target: { value: "azerty" } }); // Modifie le mot de passe
+      expect(inputPasswordUser.value).toBe("azerty"); // Vérifie que le mot de passe est bien changé
 
-      const form = screen.getByTestId("form-employee"); // Récupération du formulaire de login de l'employé
-      const handleSubmit = jest.fn((e) => e.preventDefault()); // Fonction factice pour empêcher l'envoi du formulaire
+      const form = screen.getByTestId("form-employee"); // Récupère le formulaire
+      const handleSubmit = jest.fn((e) => e.preventDefault()); // Fonction pour empêcher l'envoi du formulaire
 
-      form.addEventListener("submit", handleSubmit); // Ajout de l'écouteur d'événements pour le formulaire
-      fireEvent.submit(form); // Simulation de l'envoi du formulaire
-      expect(screen.getByTestId("form-employee")).toBeTruthy(); // Vérification que le formulaire existe toujours
+      form.addEventListener("submit", handleSubmit); // Ajoute un écouteur pour l'événement de soumission
+      fireEvent.submit(form); // Simule un clic sur le bouton de soumission
+      expect(screen.getByTestId("form-employee")).toBeTruthy(); // Vérifie que le formulaire est toujours présent
     });
   });
 
-  // Test unitaire : Vérification que l'employé est bien connecté avec un format correct dans les champs
   describe("When I do fill fields in correct format and I click on employee button Login In", () => {
+    // Cas où l'utilisateur entre un email et un mot de passe corrects
     test("Then I should be identified as an Employee in app", () => {
-      document.body.innerHTML = LoginUI(); // On rend le composant LoginUI
+      // Vérifie que l'utilisateur est identifié comme un employé
+      document.body.innerHTML = LoginUI(); // Charge l'interface de connexion
       const inputData = {
-        email: "johndoe@email.com", // Données d'exemple pour un email valide
-        password: "azerty", // Mot de passe valide
+        // Données de connexion correctes
+        email: "johndoe@email.com",
+        password: "azerty",
       };
 
-      const inputEmailUser = screen.getByTestId("employee-email-input"); // Récupération du champ email
-      fireEvent.change(inputEmailUser, { target: { value: inputData.email } }); // On simule la saisie de l'email
-      expect(inputEmailUser.value).toBe(inputData.email); // Vérification que l'email a bien été saisi
+      const inputEmailUser = screen.getByTestId("employee-email-input"); // Récupère le champ email
+      fireEvent.change(inputEmailUser, { target: { value: inputData.email } }); // Remplie le champ email avec l'email valide
+      expect(inputEmailUser.value).toBe(inputData.email); // Vérifie que l'email est correct
 
-      const inputPasswordUser = screen.getByTestId("employee-password-input"); // Récupération du champ mot de passe
+      const inputPasswordUser = screen.getByTestId("employee-password-input"); // Récupère le champ mot de passe
       fireEvent.change(inputPasswordUser, {
         target: { value: inputData.password },
-      }); // On simule la saisie du mot de passe
-      expect(inputPasswordUser.value).toBe(inputData.password); // Vérification que le mot de passe a bien été saisi
+      }); // Remplie le mot de passe
+      expect(inputPasswordUser.value).toBe(inputData.password); // Vérifie que le mot de passe est correct
 
-      const form = screen.getByTestId("form-employee"); // Récupération du formulaire de login
+      const form = screen.getByTestId("form-employee"); // Récupère le formulaire
 
-      // Simulation du localStorage pour éviter de manipuler le vrai stockage local
+      // On simule l'ajout des données dans localStorage
       Object.defineProperty(window, "localStorage", {
         value: {
-          getItem: jest.fn(() => null), // Fonction factice pour getItem
-          setItem: jest.fn(() => null), // Fonction factice pour setItem
+          getItem: jest.fn(() => null), // Simule l'absence de données dans localStorage
+          setItem: jest.fn(() => null), // Simule l'ajout des données dans localStorage
         },
         writable: true,
       });
 
-      // Mock de la navigation pour tester le changement de page
+      // Simule une navigation dans l'application après la connexion
       const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname });
+        document.body.innerHTML = ROUTES({ pathname }); // Change la page après la navigation
       };
 
-      let PREVIOUS_LOCATION = ""; // Variable pour la navigation précédente
+      let PREVIOUS_LOCATION = ""; // Aucune location précédente pour cet utilisateur
 
-      const store = jest.fn(); // Fonction factice pour stocker les informations
+      const store = jest.fn(); // Simule le store de données de l'application
 
       const login = new Login({
         document,
@@ -98,114 +101,143 @@ describe("Given that I am a user on login page", () => {
         store,
       });
 
-      const handleSubmit = jest.fn(login.handleSubmitEmployee); // Simulation de la soumission du formulaire
-      login.login = jest.fn().mockResolvedValue({}); // Simulation de la réussite de la connexion
-      form.addEventListener("submit", handleSubmit); // On écoute la soumission du formulaire
-      fireEvent.submit(form); // On simule l'envoi du formulaire
-      expect(handleSubmit).toHaveBeenCalled(); // Vérification que la fonction de soumission a été appelée
-      expect(window.localStorage.setItem).toHaveBeenCalled(); // Vérification que localStorage a été mis à jour
+      const handleSubmit = jest.fn(login.handleSubmitEmployee); // Crée une fonction pour gérer la soumission du formulaire
+      login.login = jest.fn().mockResolvedValue({}); // Simule une connexion réussie
+      form.addEventListener("submit", handleSubmit); // Ajoute un écouteur de soumission
+      fireEvent.submit(form); // Simule un clic sur le bouton de soumission
+      expect(handleSubmit).toHaveBeenCalled(); // Vérifie que la fonction de soumission a été appelée
+      expect(window.localStorage.setItem).toHaveBeenCalled(); // Vérifie que les données ont été sauvegardées dans localStorage
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         "user",
         JSON.stringify({
-          type: "Employee", // Le type d'utilisateur est "Employee"
-          email: inputData.email, // L'email de l'utilisateur
-          password: inputData.password, // Le mot de passe de l'utilisateur
-          status: "connected", // Le statut de l'utilisateur est "connected"
+          type: "Employee", // Type d'utilisateur : Employé
+          email: inputData.email,
+          password: inputData.password,
+          status: "connected", // Statut de connexion
         })
       );
     });
 
-    // Test d'intégration : Vérification que la page des notes de frais s'affiche après la connexion
     test("It should renders Bills page", () => {
-      expect(screen.getAllByText("Mes notes de frais")).toBeTruthy(); // Vérification que la page "Mes notes de frais" est bien affichée
+      // Vérifie que la page des notes de frais est affichée après la connexion
+      expect(screen.getAllByText("Mes notes de frais")).toBeTruthy(); // Vérifie que le texte est présent dans le DOM
     });
   });
 });
 
-// Début du bloc de test pour la page de login en tant qu'utilisateur "Admin" (administrateur)
+// Test pour vérifier que la couleur de fond change après une connexion réussie
+test("Given successful login, it should change body background color to white", async () => {
+  document.body.innerHTML = LoginUI(); // Charge l'interface de connexion
+
+  const inputData = {
+    // Données de connexion correctes
+    email: "johndoe@email.com",
+    password: "azerty",
+  };
+
+  const store = {
+    login: jest.fn().mockResolvedValueOnce({}), // Simule une réponse de connexion réussie
+  };
+
+  const onNavigate = jest.fn(); // Simule la fonction de navigation
+  const login = new Login({
+    document,
+    localStorage: window.localStorage,
+    onNavigate,
+    PREVIOUS_LOCATION: "",
+    store,
+  });
+
+  const form = screen.getByTestId("form-employee"); // Récupère le formulaire
+  fireEvent.submit(form); // Simule un clic sur le bouton de soumission
+
+  await new Promise(process.nextTick); // Attend la fin de la mise à jour
+  expect(document.body.style.backgroundColor).toBe("rgb(255, 255, 255)"); // Vérifie que la couleur de fond a changé en blanc
+});
+
 describe("Given that I am a user on login page", () => {
-  // Test d'intégration : Vérification de la page de login quand l'utilisateur admin ne remplit pas les champs
+  // Test similaire pour un administrateur
   describe("When I do not fill fields and I click on admin button Login In", () => {
     test("Then It should renders Login page", () => {
-      document.body.innerHTML = LoginUI(); // On rend le composant LoginUI
+      document.body.innerHTML = LoginUI(); // Charge l'interface de connexion
 
-      const inputEmailUser = screen.getByTestId("admin-email-input"); // Récupération du champ email de l'admin
-      expect(inputEmailUser.value).toBe(""); // Vérification que l'email est vide au départ
+      const inputEmailUser = screen.getByTestId("admin-email-input"); // Récupère le champ email de l'administrateur
+      expect(inputEmailUser.value).toBe(""); // Vérifie que le champ est vide
 
-      const inputPasswordUser = screen.getByTestId("admin-password-input"); // Récupération du champ mot de passe de l'admin
-      expect(inputPasswordUser.value).toBe(""); // Vérification que le mot de passe est vide au départ
+      const inputPasswordUser = screen.getByTestId("admin-password-input"); // Récupère le champ mot de passe de l'administrateur
+      expect(inputPasswordUser.value).toBe(""); // Vérifie que le champ est vide
 
-      const form = screen.getByTestId("form-admin"); // Récupération du formulaire de login de l'admin
-      const handleSubmit = jest.fn((e) => e.preventDefault()); // Fonction factice pour empêcher l'envoi du formulaire
+      const form = screen.getByTestId("form-admin"); // Récupère le formulaire d'administrateur
+      const handleSubmit = jest.fn((e) => e.preventDefault()); // Fonction pour empêcher l'envoi du formulaire
 
-      form.addEventListener("submit", handleSubmit); // Ajout d'un écouteur d'événement pour le formulaire
-      fireEvent.submit(form); // Simulation de l'envoi du formulaire
-      expect(screen.getByTestId("form-admin")).toBeTruthy(); // Vérification que le formulaire existe toujours
+      form.addEventListener("submit", handleSubmit); // Ajoute un écouteur de soumission
+      fireEvent.submit(form); // Simule un clic sur le bouton de soumission
+      expect(screen.getByTestId("form-admin")).toBeTruthy(); // Vérifie que le formulaire est toujours présent
     });
   });
 
-  // Test d'intégration : Vérification de la page de login quand l'utilisateur admin entre un format incorrect dans les champs
   describe("When I do fill fields in incorrect format and I click on admin button Login In", () => {
     test("Then it should renders Login page", () => {
-      document.body.innerHTML = LoginUI(); // On rend le composant LoginUI
+      document.body.innerHTML = LoginUI(); // Charge l'interface de connexion
 
-      const inputEmailUser = screen.getByTestId("admin-email-input"); // Récupération du champ email de l'admin
-      fireEvent.change(inputEmailUser, { target: { value: "pasunemail" } }); // On simule un changement dans le champ email avec un mauvais format
-      expect(inputEmailUser.value).toBe("pasunemail"); // Vérification que l'email a bien été modifié
+      const inputEmailUser = screen.getByTestId("admin-email-input"); // Récupère l'email de l'administrateur
+      fireEvent.change(inputEmailUser, { target: { value: "pasunemail" } }); // Remplie le champ avec un email incorrect
+      expect(inputEmailUser.value).toBe("pasunemail"); // Vérifie que l'email est incorrect
 
-      const inputPasswordUser = screen.getByTestId("admin-password-input"); // Récupération du champ mot de passe
-      fireEvent.change(inputPasswordUser, { target: { value: "azerty" } }); // On simule un changement dans le champ mot de passe
-      expect(inputPasswordUser.value).toBe("azerty"); // Vérification que le mot de passe a bien été modifié
+      const inputPasswordUser = screen.getByTestId("admin-password-input"); // Récupère le mot de passe de l'administrateur
+      fireEvent.change(inputPasswordUser, { target: { value: "azerty" } }); // Remplie le mot de passe
+      expect(inputPasswordUser.value).toBe("azerty"); // Vérifie que le mot de passe est correct
 
-      const form = screen.getByTestId("form-admin"); // Récupération du formulaire de login
-      const handleSubmit = jest.fn((e) => e.preventDefault()); // Fonction factice pour empêcher l'envoi du formulaire
+      const form = screen.getByTestId("form-admin"); // Récupère le formulaire d'administrateur
+      const handleSubmit = jest.fn((e) => e.preventDefault()); // Fonction pour empêcher l'envoi du formulaire
 
-      form.addEventListener("submit", handleSubmit); // Ajout de l'écouteur d'événements pour le formulaire
-      fireEvent.submit(form); // Simulation de l'envoi du formulaire
-      expect(screen.getByTestId("form-admin")).toBeTruthy(); // Vérification que le formulaire existe toujours
+      form.addEventListener("submit", handleSubmit); // Ajoute un écouteur de soumission
+      fireEvent.submit(form); // Simule un clic sur le bouton de soumission
+      expect(screen.getByTestId("form-admin")).toBeTruthy(); // Vérifie que le formulaire est toujours présent
     });
   });
 
-  // Test unitaire : Vérification que l'admin est bien connecté avec des champs remplis correctement
   describe("When I do fill fields in correct format and I click on admin button Login In", () => {
+    // Cas où l'administrateur remplit correctement les champs
     test("Then I should be identified as an HR admin in app", () => {
-      document.body.innerHTML = LoginUI(); // On rend le composant LoginUI
+      document.body.innerHTML = LoginUI(); // Charge l'interface de connexion
       const inputData = {
-        type: "Admin", // Type "Admin" pour l'utilisateur admin
-        email: "johndoe@email.com", // Données d'exemple pour un email valide
-        password: "azerty", // Mot de passe valide
-        status: "connected", // Statut connecté pour l'admin
+        // Données de connexion pour un administrateur
+        type: "Admin",
+        email: "johndoe@email.com",
+        password: "azerty",
+        status: "connected",
       };
 
-      const inputEmailUser = screen.getByTestId("admin-email-input"); // Récupération du champ email de l'admin
-      fireEvent.change(inputEmailUser, { target: { value: inputData.email } }); // On simule la saisie de l'email
-      expect(inputEmailUser.value).toBe(inputData.email); // Vérification que l'email a bien été saisi
+      const inputEmailUser = screen.getByTestId("admin-email-input"); // Récupère le champ email de l'administrateur
+      fireEvent.change(inputEmailUser, { target: { value: inputData.email } }); // Remplie l'email
+      expect(inputEmailUser.value).toBe(inputData.email); // Vérifie que l'email est correct
 
-      const inputPasswordUser = screen.getByTestId("admin-password-input"); // Récupération du champ mot de passe
+      const inputPasswordUser = screen.getByTestId("admin-password-input"); // Récupère le mot de passe de l'administrateur
       fireEvent.change(inputPasswordUser, {
         target: { value: inputData.password },
-      }); // On simule la saisie du mot de passe
-      expect(inputPasswordUser.value).toBe(inputData.password); // Vérification que le mot de passe a bien été saisi
+      }); // Remplie le mot de passe
+      expect(inputPasswordUser.value).toBe(inputData.password); // Vérifie que le mot de passe est correct
 
-      const form = screen.getByTestId("form-admin"); // Récupération du formulaire de login de l'admin
+      const form = screen.getByTestId("form-admin"); // Récupère le formulaire d'administrateur
 
-      // Simulation du localStorage pour éviter de manipuler le vrai stockage local
+      // On simule l'ajout des données dans localStorage
       Object.defineProperty(window, "localStorage", {
         value: {
-          getItem: jest.fn(() => null), // Fonction factice pour getItem
-          setItem: jest.fn(() => null), // Fonction factice pour setItem
+          getItem: jest.fn(() => null),
+          setItem: jest.fn(() => null),
         },
         writable: true,
       });
 
-      // Mock de la navigation pour tester le changement de page
+      // Simule une navigation vers le tableau de bord de l'administrateur
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
 
-      let PREVIOUS_LOCATION = ""; // Variable pour la navigation précédente
+      let PREVIOUS_LOCATION = ""; // Aucune location précédente pour cet utilisateur
 
-      const store = jest.fn(); // Fonction factice pour stocker les informations
+      const store = jest.fn(); // Simule le store de données de l'application
 
       const login = new Login({
         document,
@@ -215,26 +247,25 @@ describe("Given that I am a user on login page", () => {
         store,
       });
 
-      const handleSubmit = jest.fn(login.handleSubmitAdmin); // Simulation de la soumission du formulaire pour un admin
-      login.login = jest.fn().mockResolvedValue({}); // Simulation de la réussite de la connexion
-      form.addEventListener("submit", handleSubmit); // On écoute la soumission du formulaire
-      fireEvent.submit(form); // On simule l'envoi du formulaire
-      expect(handleSubmit).toHaveBeenCalled(); // Vérification que la fonction de soumission a été appelée
-      expect(window.localStorage.setItem).toHaveBeenCalled(); // Vérification que localStorage a été mis à jour
+      const handleSubmit = jest.fn(login.handleSubmitAdmin); // Fonction pour gérer la soumission du formulaire pour l'administrateur
+      login.login = jest.fn().mockResolvedValue({}); // Simule une connexion réussie pour l'administrateur
+      form.addEventListener("submit", handleSubmit); // Ajoute un écouteur de soumission
+      fireEvent.submit(form); // Simule un clic sur le bouton de soumission
+      expect(handleSubmit).toHaveBeenCalled(); // Vérifie que la fonction de soumission a été appelée
+      expect(window.localStorage.setItem).toHaveBeenCalled(); // Vérifie que les données ont été sauvegardées
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         "user",
         JSON.stringify({
-          type: "Admin", // Le type d'utilisateur est "Admin"
-          email: inputData.email, // L'email de l'utilisateur
-          password: inputData.password, // Le mot de passe de l'utilisateur
-          status: "connected", // Le statut de l'utilisateur est "connected"
+          type: "Admin", // Type d'utilisateur : Admin
+          email: inputData.email,
+          password: inputData.password,
+          status: "connected", // Statut de connexion
         })
       );
     });
 
-    // Test d'intégration : Vérification que la page des notes de frais s'affiche après la connexion
-    test("It should renders Dashboard page", () => {
-      expect(screen.queryByText("Validations")).toBeTruthy(); // Vérification que la page "Mes notes de frais" est bien affichée
+    test("It should renders HR dashboard page", () => {
+      expect(screen.queryByText("Validations")).toBeTruthy(); // Vérifie que la page du tableau de bord de l'administrateur est affichée
     });
   });
 });
